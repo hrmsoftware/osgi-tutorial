@@ -17,7 +17,7 @@
     </properties>
 
     <modules>
-        <module>hello-bundle</module>
+        <module>demo-bundle</module>
     </modules>
 
     <!-- Dependencies used by all sub-modules. -->
