@@ -13,8 +13,6 @@ $> mvn clean install
 
 ## 1 : Bygg en väldigt enkel OSGi-modul
 
-
-
 2. Templateprojektet (@ GitHub)
     * Visa hur Maven är uppsatt.
     * Visa hur bundlen ser ut.
