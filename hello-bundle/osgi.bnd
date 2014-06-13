@@ -1,0 +1,7 @@
+# This is a java properties file that contains instructions
+# to the BND tool (http://www.aqute.biz/Bnd/Bnd). This tool is
+# used by the maven-bundle-plugin to create metadata for the OSGi 
+# bundle.
+
+# This defines a BundleActivator to use.
+Bundle-Activator: se.hrmsoftware.demo.internal.Activator
