@@ -5,10 +5,11 @@
 * Installera [Apache Maven](http://maven.apache.org). Detta borde de flesta redan hunnit göra.
 * Se till att koden för Integrationsmotorn är utcheckad och att det går bygga den:
 
-
-    $> svn checkout http://172.20.10.66/svn/hrm2/trunk/integration-engine
-    $> cd [där koden blev utcheckad]
-    $> mvn clean install
+~~~~~~~
+$> svn checkout http://172.20.10.66/svn/hrm2/trunk/integration-engine
+$> cd [där koden blev utcheckad]
+$> mvn clean install
+~~~~~~~
 
 ## 1 : Bygg en väldigt enkel OSGi-modul
 
