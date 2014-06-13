@@ -5,3 +5,7 @@
 
 # This defines a BundleActivator to use.
 Bundle-Activator: se.hrmsoftware.demo.internal.Activator
+
+# This instructs BND to scan for Declarative Services annotations.
+# Read more here: http://www.aqute.biz/Bnd/Components
+-dsannotations: *
