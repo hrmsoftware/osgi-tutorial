@@ -8,7 +8,7 @@ databasmigreringar för Liquibase i OSGi-bundlen.
 
 Här är en översikt över vad vi ska gå igenom:
 
-
+![Overview](https://raw.githubusercontent.com/metamorph/osgi-tutorial/master/resources/pics/overview.png)
 
 ## Förberedelser
     
