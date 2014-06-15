@@ -2,15 +2,22 @@ package se.hrmsoftware.demo.internal;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.data.util.sqlcontainer.SQLContainer;
+import com.vaadin.data.util.sqlcontainer.connection.J2EEConnectionPool;
+import com.vaadin.data.util.sqlcontainer.query.TableQuery;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Date;
 
 /**
@@ -18,11 +25,42 @@ import java.util.Date;
  */
 @Theme(Reindeer.THEME_NAME)
 public class App extends UI {
+	private final DataSource dataSource;
+
+	public App(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
 	@Override
 	protected void init(VaadinRequest request) {
-		// The panel.
-		Panel panel = new Panel("Vaadin Example");
-		panel.setWidth(40f, Unit.PERCENTAGE);
+		// Main UI is a TabSheet.
+		TabSheet tabs = new TabSheet();
+		tabs.setWidth(50f, Unit.PERCENTAGE);
+		tabs.setHeight(100f, Unit.PERCENTAGE);
+
+		// Add the server-time component.
+		tabs.addTab(createServerTimeContent(), "Server Time");
+
+		// Add an empty component
+		tabs.addTab(createDataAccessContent(), "Vaadin Data Access");
+
+		// Set the panel as the page's content.
+		setContent(tabs);
+	}
+
+	private Component createDataAccessContent() {
+		try {
+			SQLContainer sqlContainer = new SQLContainer(new TableQuery("TEST", new J2EEConnectionPool(dataSource)));
+			Table table = new Table("TEST Table", sqlContainer);
+			table.setWidth(100f, Unit.PERCENTAGE);
+			return table;
+		}
+		catch (SQLException e) {
+			throw new RuntimeException("Wtf", e);
+		}
+	}
+
+	private Component createServerTimeContent() {
 
 		// A property that holds the server-time.
 		final ObjectProperty<String> serverTime = new ObjectProperty<String>(currentTime(), String.class);
@@ -42,10 +80,8 @@ public class App extends UI {
 		VerticalLayout layout = new VerticalLayout(serverTimeLabel, serverTimeRefreshBtn);
 		layout.setMargin(true);
 		layout.setSpacing(true);
-		panel.setContent(layout);
+		return layout;
 
-		// Set the panel as the page's content.
-		setContent(panel);
 	}
 
 	private String currentTime() {
