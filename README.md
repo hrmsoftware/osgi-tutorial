@@ -1,15 +1,34 @@
 # "Getting Started" med OSGi, Vaadin, SQL och MyBatis
 
+Det här är en introduktion / tutorial / guide i OSGi, Vaadin och en liten släng
+databas-access. Vi ska bygga en enkel OSGi-bundle, begåva den med ett
+gränssnitt i Vaadin och sedan accessa databasen på två sätt (genom en
+Vaadin-komponent och genom MyBatis). Dessutom tittar vi på hur vi kan paketera
+databasmigreringar för Liquibase i OSGi-bundlen.
+
+Här är en översikt över vad vi ska gå igenom:
+
+
+
 ## Förberedelser
     
-* Installera [Apache Maven](http://maven.apache.org). Detta borde de flesta redan hunnit göra.
-* Se till att koden för Integrationsmotorn är utcheckad och att det går bygga den:
+* Installera [Apache Maven](http://maven.apache.org). Detta borde de flesta
+  redan hunnit göra.
+* Se till att koden för Integrationsmotorn är utcheckad och att det går bygga
+  den:
 
 ~~~~~~~
 $> svn checkout http://172.20.10.66/svn/hrm2/trunk/integration-engine
 $> cd [där koden blev utcheckad]
 $> mvn clean install
 ~~~~~~~
+* Kika igenom koden och era anteckningar från
+  [osgi-introduction](https://github.com/hrmsoftware/osgi-introduction) för att
+  komma upp till speed med OSGi igen.
+* Plocka bort arbetskatalogen för HRMs OSGi-kontainer och låt den omskapas
+  genom att starta upp OSGi-kontainern. (Om ni inte minns hur man gör det så
+  fråga :).)
+
 
 ## 1 : Bygg en väldigt enkel OSGi-modul
 
