@@ -42,6 +42,9 @@ $> mvn clean install
 
 ## 2 : Lägg till en Vaadin-applikation
 
+* [Vaadin](http://vaadin.com)
+* ["The book of Vaadin"](https://vaadin.com/book)
+
 4. Lägg till en vaadin-app till bundlen.
     * Lägg till dependency till bundlen.
     * Bygg en servlet (DS) - exponera den med whiteboard-patternet.
@@ -58,8 +61,10 @@ $> mvn clean install
 
 ## 4 : MyBatis
 
-* Introduktion.
+* [MyBatis](http://mybatis.github.io/mybatis-3/)
 
 ## 5 : Liquibase
+
+* [Liquibase](http://www.liquibase.org/documentation/index.html)
 
 ## x : Visa hur man kan lägga till fler bundlar till maven-projektet.

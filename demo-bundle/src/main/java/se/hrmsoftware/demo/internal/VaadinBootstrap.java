@@ -21,32 +21,11 @@ import javax.servlet.ServletException;
 import javax.sql.DataSource;
 
 @Component(immediate = true, service = { Servlet.class }, property = { "alias=/demo", "servlet-name=demo-app" })
-public class VaadinBootstrap extends VaadinServlet {
+public class VaadinBootstrap extends VaadinServlet implements SessionInitListener {
 
 	private final static Logger LOG = LoggerFactory.getLogger(VaadinBootstrap.class);
+	private AppUiProvider appUiProvider = new AppUiProvider();
 	private DataSource dataSource;
-
-	@Override
-	public void init(ServletConfig servletConfig) throws ServletException {
-		super.init(servletConfig);
-		getService().addSessionInitListener(new SessionInitListener() {
-			@Override
-			public void sessionInit(SessionInitEvent event) throws ServiceException {
-				event.getSession().addUIProvider(new UIProvider() {
-					@Override
-					public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
-						return App.class;
-					}
-
-					@Override
-					public UI createInstance(UICreateEvent event) {
-						return new App(dataSource);
-					}
-				});
-			}
-		});
-	}
-
 
 	@Reference(target = "(osgi.jdbc.datasource.id=h2)")
 	void setDatasource(DataSource dataSource) {
@@ -56,6 +35,29 @@ public class VaadinBootstrap extends VaadinServlet {
 	@Activate
 	void onActivate(BundleContext ctx) {
 		LOG.info("Bootstrapping Vaadin");
+	}
+
+	@Override
+	public void init(ServletConfig servletConfig) throws ServletException {
+		super.init(servletConfig);
+		getService().addSessionInitListener(this);
+	}
+
+	@Override
+	public void sessionInit(SessionInitEvent event) throws ServiceException {
+		event.getSession().addUIProvider(appUiProvider);
+	}
+
+	public class AppUiProvider extends UIProvider {
+		@Override
+		public UI createInstance(UICreateEvent event) {
+			return new App(dataSource);
+		}
+
+		@Override
+		public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
+			return App.class;
+		}
 	}
 }
 
