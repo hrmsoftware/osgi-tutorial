@@ -15,16 +15,22 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
+import se.hrmsoftware.demo.internal.tabs.ComponentFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 
 /**
- * The vaadin application.
+ * The vaadin application. It builds a UI based on a tabsheet and a set of "component factories" that
+ * are supplied dynamically.
  */
 @Theme(Reindeer.THEME_NAME)
 public class App extends UI {
+
+	private final TabSheet tabs = new TabSheet();
 	private final DataSource dataSource;
 
 	public App(DataSource dataSource) {
@@ -34,7 +40,6 @@ public class App extends UI {
 	@Override
 	protected void init(VaadinRequest request) {
 		// Main UI is a TabSheet.
-		TabSheet tabs = new TabSheet();
 		tabs.setWidth(50f, Unit.PERCENTAGE);
 		tabs.setHeight(100f, Unit.PERCENTAGE);
 
@@ -46,12 +51,51 @@ public class App extends UI {
 
 		// Set the panel as the page's content.
 		setContent(tabs);
+
+		ComponentFactory labelTab = new ComponentFactory() {
+			@Override
+			public String getLabel() {
+				return "Server Time";
+			}
+
+			@Override
+			public Component create() {
+				return createServerTimeContent();
+			}
+		};
+
+		ComponentFactory sqlTab = new ComponentFactory() {
+			@Override
+			public String getLabel() {
+				return "Vaadin Data Access";
+			}
+
+			@Override
+			public Component create() {
+				return createDataAccessContent();
+			}
+		};
+
+		updateTabs(Arrays.asList(labelTab, sqlTab));
+	}
+
+	public void updateTabs(final Collection<ComponentFactory> componentFactories) {
+		// Gain exclusive access to UI.
+		access(new Runnable() {
+			@Override
+			public void run() {
+				tabs.removeAllComponents();
+				for (ComponentFactory factory : componentFactories) {
+					tabs.addTab(factory.create(), factory.getLabel());
+				}
+			}
+		});
 	}
 
 	private Component createDataAccessContent() {
 		try {
-			SQLContainer sqlContainer = new SQLContainer(new TableQuery("TEST", new J2EEConnectionPool(dataSource)));
-			Table table = new Table("TEST Table", sqlContainer);
+			SQLContainer sqlContainer = new SQLContainer(new TableQuery("COUNTRIES", new J2EEConnectionPool(dataSource)));
+			Table table = new Table("COUNTRIES Table", sqlContainer);
 			table.setWidth(100f, Unit.PERCENTAGE);
 			return table;
 		}

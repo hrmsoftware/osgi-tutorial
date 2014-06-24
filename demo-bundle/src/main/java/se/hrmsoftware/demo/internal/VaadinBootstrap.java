@@ -14,6 +14,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.hrmsoftware.bundles.db.migration.liquibase.MigratedDataSource;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -28,7 +29,7 @@ public class VaadinBootstrap extends VaadinServlet implements SessionInitListene
 	private DataSource dataSource;
 
 	@Reference(target = "(osgi.jdbc.datasource.id=h2)")
-	void setDatasource(DataSource dataSource) {
+	void setDatasource(MigratedDataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 
