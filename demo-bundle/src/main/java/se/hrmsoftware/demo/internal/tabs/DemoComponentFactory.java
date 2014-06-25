@@ -3,7 +3,7 @@ package se.hrmsoftware.demo.internal.tabs;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
-@org.osgi.service.component.annotations.Component
+@org.osgi.service.component.annotations.Component(immediate = true)
 public class DemoComponentFactory implements ComponentFactory {
 	@Override
 	public String getLabel() {
