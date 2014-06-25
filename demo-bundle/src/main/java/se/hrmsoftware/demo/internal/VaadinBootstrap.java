@@ -12,9 +12,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.hrmsoftware.bundles.db.migration.liquibase.MigratedDataSource;
+import se.hrmsoftware.demo.internal.tabs.ComponentFactory;
+import se.hrmsoftware.demo.internal.tabs.ComponentManager;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -25,12 +29,22 @@ import javax.sql.DataSource;
 public class VaadinBootstrap extends VaadinServlet implements SessionInitListener {
 
 	private final static Logger LOG = LoggerFactory.getLogger(VaadinBootstrap.class);
-	private AppUiProvider appUiProvider = new AppUiProvider();
+	private final ComponentManager componentManager = new ComponentManager();
+	private final AppUiProvider appUiProvider = new AppUiProvider();
 	private DataSource dataSource;
 
 	@Reference(target = "(osgi.jdbc.datasource.id=h2)")
 	void setDatasource(MigratedDataSource dataSource) {
 		this.dataSource = dataSource;
+	}
+
+	@Reference(policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL)
+	void addComponentFactory(ComponentFactory componentFactory) {
+		componentManager.addComponentFactory(componentFactory);
+	}
+
+	void removeComponentFactory(ComponentFactory componentFactory) {
+		componentManager.removeComponentFactory(componentFactory);
 	}
 
 	@Activate
@@ -52,7 +66,7 @@ public class VaadinBootstrap extends VaadinServlet implements SessionInitListene
 	public class AppUiProvider extends UIProvider {
 		@Override
 		public UI createInstance(UICreateEvent event) {
-			return new App(dataSource);
+			return new App(dataSource, componentManager);
 		}
 
 		@Override

@@ -16,25 +16,30 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 import se.hrmsoftware.demo.internal.tabs.ComponentFactory;
+import se.hrmsoftware.demo.internal.tabs.ComponentManager;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * The vaadin application. It builds a UI based on a tabsheet and a set of "component factories" that
  * are supplied dynamically.
  */
 @Theme(Reindeer.THEME_NAME)
-public class App extends UI {
+public class App extends UI implements ComponentManager.Listener {
 
 	private final TabSheet tabs = new TabSheet();
 	private final DataSource dataSource;
+	private final ComponentManager componentManager;
 
-	public App(DataSource dataSource) {
+	public App(DataSource dataSource, ComponentManager componentManager) {
 		this.dataSource = dataSource;
+		this.componentManager = componentManager;
 	}
 
 	@Override
@@ -42,6 +47,7 @@ public class App extends UI {
 		// Main UI is a TabSheet.
 		tabs.setWidth(50f, Unit.PERCENTAGE);
 		tabs.setHeight(100f, Unit.PERCENTAGE);
+		tabs.setImmediate(true);
 
 		// Add the server-time component.
 		tabs.addTab(createServerTimeContent(), "Server Time");
@@ -75,21 +81,36 @@ public class App extends UI {
 				return createDataAccessContent();
 			}
 		};
+		List<ComponentFactory> factories = new ArrayList<ComponentFactory>(Arrays.asList(labelTab, sqlTab));
+		factories.addAll(componentManager.getComponentFactories());
+		updateTabs(factories);
+		componentManager.addListener(this);
+	}
 
-		updateTabs(Arrays.asList(labelTab, sqlTab));
+	@Override
+	public void onUpdate(final Collection<ComponentFactory> factories) {
+		if (getSession() != null) {
+			access(new Runnable() {
+				@Override
+				public void run() {
+					updateTabs(factories);
+					//					push();
+				}
+			});
+		}
+	}
+
+	@Override
+	public void detach() {
+		componentManager.removeListener(this);
+		super.detach();
 	}
 
 	public void updateTabs(final Collection<ComponentFactory> componentFactories) {
-		// Gain exclusive access to UI.
-		access(new Runnable() {
-			@Override
-			public void run() {
-				tabs.removeAllComponents();
-				for (ComponentFactory factory : componentFactories) {
-					tabs.addTab(factory.create(), factory.getLabel());
-				}
-			}
-		});
+		tabs.removeAllComponents();
+		for (ComponentFactory factory : componentFactories) {
+			tabs.addTab(factory.create(), factory.getLabel());
+		}
 	}
 
 	private Component createDataAccessContent() {
@@ -131,4 +152,5 @@ public class App extends UI {
 	private String currentTime() {
 		return "" + new Date();
 	}
+
 }
